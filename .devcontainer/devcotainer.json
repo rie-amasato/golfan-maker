@@ -1,0 +1,3 @@
+{
+    "postCreateCommand": "cd golfantasia-meker;npm i;"
+}
