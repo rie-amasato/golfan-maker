@@ -156,8 +156,6 @@ const loadimg=()=>{
 
         const isVerticalPath=(direction.value=="vertical" &&
             ["amaiamai.png", "chara.png", "fa.png"].includes(i.path))
-
-            console.log(direction, i.path, isVerticalPath)
         
         img.src= isVerticalPath?"vertical/"+i.path:i.path
         img.onload=async()=>{
@@ -196,7 +194,6 @@ const reset=()=>{
     const elmCanvas=document.getElementById("mainCanvas")
     const context = elmCanvas.getContext('2d');
 
-    //background color
     context.beginPath();
     context.fillStyle = "#"+bgColor.value;
     context.fillRect(0, 0, elmCanvas.width, elmCanvas.height);
