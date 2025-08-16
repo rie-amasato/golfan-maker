@@ -18,7 +18,7 @@
 
             <div class="s1">画像</div>
             <div class="s2 e5">
-                <input type="file" @input="upload"></input>
+                <input type="file" @change="charaImgUpload"></input>
             </div>
         </div>
         <button @click="mkMovie">ゴルファン生成</button>
@@ -35,18 +35,20 @@ const imgs=ref([
     {
 		path: "chara.png", img: null,
 		startfrm: 15, endfrm: 18,
-		sx:-1, ex: 0, sy: -0.1, ey: 0
+		sx:-1, ex: 0, sy: -0.1, ey: 0,
+        effect: "uploadTarget"
 	},
     {
 		path: "chara.png", img: null,
 		startfrm: 18, endfrm: 50,
-		sx:0, ex: 0, sy: 0, ey: 0
+		sx:0, ex: 0, sy: 0, ey: 0,
+        effect: "uploadTarget"
 	},
     {
 		path: "chara.png", img: null,
 		startfrm: 50, endfrm: 55,
-		sx: 0, ex: -1.5, sy: 0, ey: 0,
-        effect: "upscale"
+		sx: 0, ex: -2, sy: 0, ey: 0,
+        effect: "upscale uploadTarget"
 	},
     {
         path: 'line.png', img: null,
@@ -101,7 +103,7 @@ const imgs=ref([
 	{
 		path: "mimi.png", img: null,
 		startfrm: 50, endfrm:55,
-		sx:0, ex:-1.5, sy: 0, ey: 0,
+		sx:0, ex:-2, sy: 0, ey: 0,
         effect: "upscale",
 	},
     {
@@ -142,13 +144,12 @@ const loadimg=()=>{
         const img=new Image()
         img.src=i.path
         img.onload=async()=>{
-            console.log({...i, img})
             imgs.value[index]= {...imgs.value[index], img}
         }
     })
 }
 
-const mimidisable=()=>{
+const mimiDisable=()=>{
     imgs.value.forEach((i, index)=>{
         if (i.path=="mimi.png"){
             imgs.value[index]={...imgs.value[index], disabled: true}
@@ -156,8 +157,17 @@ const mimidisable=()=>{
     })
 }
 
-const upload=()=>{
-    mimidisable()
+const charaImgUpload=(e)=>{
+    mimiDisable()
+    const charaImg=e.target.files[0]
+
+    const blobUrl=window.URL.createObjectURL(charaImg)
+    imgs.value.forEach((i, index)=>{
+        if (i.effect?.includes("uploadTarget")){
+            imgs.value[index]={...imgs.value[index], path: blobUrl}
+        }
+    })
+    loadimg()
 }
 
 const reset=()=>{
@@ -191,7 +201,7 @@ const mkFrame=(frm)=>{
             // 0から1になる値
             const p=(frm-i.startfrm)/(i.endfrm-i.startfrm)
             
-            if (i.effect=="upscale"){
+            if (i.effect?.includes("upscale")){
                 const scale=0.5
                 context.drawImage(i.img, 
                     i.img.width*(scale*p), i.img.height*(scale*p), 
