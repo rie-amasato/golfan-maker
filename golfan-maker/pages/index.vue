@@ -1,5 +1,6 @@
 <template>
     <div class="container blue">
+        <p>プレビュー</p>
         <canvas id="mainCanvas"
             width="480"
             height="270"
@@ -39,7 +40,7 @@
         </div>
     </div>
     <div class="container blue">
-    <p>素材テンプレート(クリッピングしての使用を推奨)</p>
+    <p>素材テンプレート(保存した画像をクリッピングしての使用を推奨)</p>
     <img src="/template.png">
     </div>
 
