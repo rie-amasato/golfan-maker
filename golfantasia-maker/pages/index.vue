@@ -4,13 +4,17 @@
             width="480"
             height="270"
         ></canvas>
-
-
-        <div>1080P=>1920pxx1080px</div>
     </div>
     <div class="container blue">
         <p>設定項目</p>
         <div class="grid">
+            <div class="s1">向き</div>
+            <div class="s2 e5">
+                <input type="radio" name="direction" value="horizontal" 
+                v-model="direction" @change="changeDirection">横</input>
+                <input type="radio" name="direction" value="vertical"
+                v-model="direction" @change="changeDirection">縦</input>
+            </div>
             <div class="s1">背景色</div>
             <div class="s2 e5">
                 #<input v-model="bgColor" @input="reset"></input>
@@ -30,17 +34,16 @@
 </template>
 
 <script setup>
-
 const imgs=ref([
     {
 		path: "chara.png", img: null,
-		startfrm: 15, endfrm: 18,
+		startfrm: 10, endfrm: 13,
 		sx:-1, ex: 0, sy: -0.1, ey: 0,
         effect: "uploadTarget"
 	},
     {
 		path: "chara.png", img: null,
-		startfrm: 18, endfrm: 50,
+		startfrm: 13, endfrm: 50,
 		sx:0, ex: 0, sy: 0, ey: 0,
         effect: "uploadTarget"
 	},
@@ -92,12 +95,12 @@ const imgs=ref([
     },
     {
 		path: "mimi.png", img: null,
-		startfrm: 15, endfrm:18,
+		startfrm: 10, endfrm:13,
 		sx:-1, ex: 0, sy: -0.1, ey: 0,
 	},
 	{
 		path: "mimi.png", img: null,
-		startfrm: 18, endfrm: 50,
+		startfrm: 13, endfrm: 50,
 		sx: 0, ex: 0, sy: 0, ey: 0,
 	},
 	{
@@ -113,7 +116,7 @@ const imgs=ref([
     },
     {
 		path: "fa.png", img: null,
-		startfrm: 22, endfrm: 35,
+		startfrm: 22, endfrm: 45,
 		sx: 0, ex: 0, sy: 0.1, ey: 0.1
 	},
     {
@@ -132,6 +135,8 @@ const imgs=ref([
 		sx: -0.05, ex: 1, sy: 0.05, ey: 1
 	},
 ])
+
+const direction=ref("horizontal")
 const bgColor=ref("00FF00");
 
 onMounted(()=>{
@@ -142,7 +147,13 @@ onMounted(()=>{
 const loadimg=()=>{
     imgs.value.forEach((i, index)=>{
         const img=new Image()
-        img.src=i.path
+
+        const isVerticalPath=(direction.value=="vertical" &&
+            ["amaiamai.png", "chara.png", "fa.png"].includes(i.path))
+
+            console.log(direction, i.path, isVerticalPath)
+        
+        img.src= isVerticalPath?"vertical/"+i.path:i.path
         img.onload=async()=>{
             imgs.value[index]= {...imgs.value[index], img}
         }
@@ -155,6 +166,11 @@ const mimiDisable=()=>{
             imgs.value[index]={...imgs.value[index], disabled: true}
         }
     })
+}
+
+const changeDirection=()=>{
+    mimiDisable()
+    loadimg()
 }
 
 const charaImgUpload=(e)=>{
