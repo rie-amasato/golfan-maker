@@ -9,11 +9,17 @@
         <p>設定項目</p>
         <div class="grid">
             <div class="s1">向き</div>
-            <div class="s2 e5">
+            <div class="s2 e3">
                 <input type="radio" name="direction" value="horizontal" 
-                v-model="direction" @change="changeDirection">横</input>
+                    id="directionHorizontal"
+                    v-model="direction" @change="changeDirection"></input>
+                <label for="directionHorizontal">横</label>
+            </div>
+            <div class="s3 e4">
                 <input type="radio" name="direction" value="vertical"
-                v-model="direction" @change="changeDirection">縦</input>
+                    id="directionVertical"
+                    v-model="direction" @change="changeDirection"></input>
+                <label for="directionVertical">縦</label>
             </div>
             <div class="s1">背景色</div>
             <div class="s2 e5">
