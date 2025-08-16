@@ -1,6 +1,12 @@
 <template>
     <div class="container blue">
-        <canvas id="mainCanvas"></canvas>
+        <canvas id="mainCanvas"
+            width="480"
+            height="270"
+        ></canvas>
+
+
+        <div>1080P=>1920pxx1080px</div>
     </div>
     <div class="container blue">
         <p>設定項目</p>
@@ -12,15 +18,36 @@
 
             <div class="s1">画像</div>
             <div class="s2 e5">
-                <input type="file" @input="reset"></input>
+                <input type="file" @input="upload"></input>
             </div>
         </div>
         <button @click="mkMovie">ゴルファン生成</button>
     </div>
+    <div class="container blue">
+    <p>素材テンプレート(クリッピングしての使用を推奨)</p>
+    <img src="/template.png">
+    </div>
 </template>
 
 <script setup>
+
 const imgs=ref([
+    {
+		path: "chara.png", img: null,
+		startfrm: 15, endfrm: 18,
+		sx:-1, ex: 0, sy: -0.1, ey: 0
+	},
+    {
+		path: "chara.png", img: null,
+		startfrm: 18, endfrm: 50,
+		sx:0, ex: 0, sy: 0, ey: 0
+	},
+    {
+		path: "chara.png", img: null,
+		startfrm: 50, endfrm: 55,
+		sx: 0, ex: -1.5, sy: 0, ey: 0,
+        effect: "upscale"
+	},
     {
         path: 'line.png', img: null,
         startfrm: 0, endfrm: 2,
@@ -61,7 +88,47 @@ const imgs=ref([
         startfrm: 50, endfrm: 55,
         sx: 0, ex: 0, sy: 0.5, ey: 1
     },
-    
+    {
+		path: "mimi.png", img: null,
+		startfrm: 15, endfrm:18,
+		sx:-1, ex: 0, sy: -0.1, ey: 0,
+	},
+	{
+		path: "mimi.png", img: null,
+		startfrm: 18, endfrm: 50,
+		sx: 0, ex: 0, sy: 0, ey: 0,
+	},
+	{
+		path: "mimi.png", img: null,
+		startfrm: 50, endfrm:55,
+		sx:0, ex:-1.5, sy: 0, ey: 0,
+        effect: "upscale",
+	},
+    {
+        path: 'fa.png', img: null,
+        startfrm: 18, endfrm: 22,
+        sx: 0.2, ex: 0, sy: 1, ey: 0.1
+    },
+    {
+		path: "fa.png", img: null,
+		startfrm: 22, endfrm: 35,
+		sx: 0, ex: 0, sy: 0.1, ey: 0.1
+	},
+    {
+		path: "amaiamai.png", img: null,
+		startfrm: 32, endfrm: 34,
+		sx: 0.5, ex: -0.05, sy: 0.2, ey: 0.05
+	},
+    {
+		path: "amaiamai.png", img: null,
+		startfrm: 34, endfrm: 50,
+		sx: -0.05, ex: -0.05, sy: 0.05, ey: 0.05
+	},
+    {
+		path: "amaiamai.png", img: null,
+		startfrm: 50, endfrm: 55,
+		sx: -0.05, ex: 1, sy: 0.05, ey: 1
+	},
 ])
 const bgColor=ref("00FF00");
 
@@ -81,6 +148,18 @@ const loadimg=()=>{
     })
 }
 
+const mimidisable=()=>{
+    imgs.value.forEach((i, index)=>{
+        if (i.path=="mimi.png"){
+            imgs.value[index]={...imgs.value[index], disabled: true}
+        }
+    })
+}
+
+const upload=()=>{
+    mimidisable()
+}
+
 const reset=()=>{
     const elmCanvas=document.getElementById("mainCanvas")
     const context = elmCanvas.getContext('2d');
@@ -92,7 +171,7 @@ const reset=()=>{
 }
 
 const mkMovie=async()=>{
-    const maxFrm=100
+    const maxFrm=55
     let frm=0
 
     const interval=setInterval(()=>{
@@ -108,16 +187,28 @@ const mkFrame=(frm)=>{
     const context = elmCanvas.getContext('2d');
 
     imgs.value.forEach((i)=>{
-        if(i.startfrm<=frm && frm<=i.endfrm){
+        if(!i.disabled && i.startfrm<=frm && frm<=i.endfrm){
             // 0から1になる値
             const p=(frm-i.startfrm)/(i.endfrm-i.startfrm)
             
-            context.drawImage(i.img, 
-                0, 0, i.img.width, i.img.height,
-                elmCanvas.width*(i.sx+(i.ex-i.sx)*p),
-                elmCanvas.height*(i.sy+(i.ey-i.sy)*p),
-                elmCanvas.width, elmCanvas.height
-            )
+            if (i.effect=="upscale"){
+                const scale=0.5
+                context.drawImage(i.img, 
+                    i.img.width*(scale*p), i.img.height*(scale*p), 
+                    i.img.width*(1-scale*p), i.img.height*(1-scale*p),
+                    
+                    elmCanvas.width*(i.sx+(i.ex-i.sx)*p)*scale*p,
+                    elmCanvas.height*(i.sy+(i.ey-i.sy)*p),
+                    elmCanvas.width, elmCanvas.height*(1+scale*p)
+                )
+            }else{
+                context.drawImage(i.img, 
+                    0, 0, i.img.width, i.img.height,
+                    elmCanvas.width*(i.sx+(i.ex-i.sx)*p),
+                    elmCanvas.height*(i.sy+(i.ey-i.sy)*p),
+                    elmCanvas.width, elmCanvas.height
+                )
+            }
         }
     })
 }
