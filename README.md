@@ -1,1 +1,1 @@
-# golfantasia-maker
+# golfan-maker

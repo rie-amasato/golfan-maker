@@ -1,3 +1,3 @@
 {
-    "post StartCommand": "cd golfantasia-meker;npm i;"
+    "post StartCommand": "cd golfan-meker;npm i;"
 }
