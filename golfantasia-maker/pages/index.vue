@@ -122,17 +122,17 @@ const imgs=ref([
     {
 		path: "amaiamai.png", img: null,
 		startfrm: 32, endfrm: 34,
-		sx: 0.5, ex: -0.05, sy: 0.2, ey: 0.05
+		sx: 0.5, ex: -0.06, sy: 0.2, ey: 0.05
 	},
     {
 		path: "amaiamai.png", img: null,
 		startfrm: 34, endfrm: 50,
-		sx: -0.05, ex: -0.05, sy: 0.05, ey: 0.05
+		sx: -0.06, ex: -0.06, sy: 0.05, ey: 0.05
 	},
     {
 		path: "amaiamai.png", img: null,
 		startfrm: 50, endfrm: 55,
-		sx: -0.05, ex: 1, sy: 0.05, ey: 1
+		sx: -0.06, ex: 1, sy: 0.05, ey: 1
 	},
 ])
 
