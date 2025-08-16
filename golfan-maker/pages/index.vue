@@ -31,13 +31,39 @@
                 <input type="file" @change="charaImgUpload"></input>
             </div>
         </div>
-        <button @click="mkMovie">ゴルファン生成</button>
+
+        <div class="mt8">
+            <button @click="previewMovie" :disabled="isProcess">ゴルファンプレビュー</button>
+            <button @click="saveMovie" :disabled="isProcess" class="ml16">ゴルファン動画保存(1080p)</button>
+            <span class="ml16">{{ processStatus }}</span>
+        </div>
     </div>
     <div class="container blue">
     <p>素材テンプレート(クリッピングしての使用を推奨)</p>
     <img src="/template.png">
     </div>
+
+    <a id="dlLink"></a>
+    <canvas
+        id="canvasP1080"
+        width="1920"
+        height="1080"
+        class="none"
+    ></canvas>
 </template>
+
+<style>
+.mt8{
+    margin-top: 8px;
+}
+.ml16{
+    margin-left: 16px;
+}
+
+.none{
+    display: none;
+}
+</style>
 
 <script setup>
 const imgs=ref([
@@ -142,8 +168,12 @@ const imgs=ref([
 	},
 ])
 
+const isProcess=ref(false)
 const direction=ref("horizontal")
 const bgColor=ref("00FF00");
+
+const processCanvas=ref("mainCanvas")
+const processStatus=ref("")
 
 onMounted(()=>{
     loadimg()
@@ -191,7 +221,7 @@ const charaImgUpload=(e)=>{
 }
 
 const reset=()=>{
-    const elmCanvas=document.getElementById("mainCanvas")
+    const elmCanvas=document.getElementById(processCanvas.value)
     const context = elmCanvas.getContext('2d');
 
     context.beginPath();
@@ -199,20 +229,25 @@ const reset=()=>{
     context.fillRect(0, 0, elmCanvas.width, elmCanvas.height);
 }
 
-const mkMovie=async()=>{
+const mkMovie=(recorder=false)=>{
     const maxFrm=55
     let frm=0
 
     const interval=setInterval(()=>{
         mkFrame(frm)
         if (frm<maxFrm)frm+=1
-        else clearInterval(interval)
+        else {
+            clearInterval(interval)
+            isProcess.value=false
+            if(Object.prototype.toString.call(recorder).
+                includes("MediaRecorder"))recorder.stop()
+        }
     }, 50)
 }
 
 const mkFrame=(frm)=>{
     reset()
-    const elmCanvas=document.getElementById("mainCanvas")
+    const elmCanvas=document.getElementById(processCanvas.value)
     const context = elmCanvas.getContext('2d');
 
     imgs.value.forEach((i)=>{
@@ -240,5 +275,34 @@ const mkFrame=(frm)=>{
             }
         }
     })
+}
+
+const previewMovie=()=>{
+    isProcess.value=true
+    processCanvas.value="mainCanvas"
+    mkMovie()
+}
+
+const saveMovie=async ()=>{
+    processStatus.value="mp4生成中..."
+    isProcess.value=true
+    processCanvas.value="canvasP1080"
+
+    const canvas=document.getElementById(processCanvas.value)
+    const stream=canvas.captureStream()
+    const recorder = new MediaRecorder(stream, {mimeType: "video/mp4;"})
+
+    recorder.ondataavailable=(e)=>{
+        const videoBlob=new Blob([e.data], {type: e.data.type})
+        const blobUrl=window.URL.createObjectURL(videoBlob)
+
+        const anchor=document.getElementById("dlLink")
+        anchor.download="golfan.mp4"
+        anchor.href=blobUrl
+        anchor.click()
+        processStatus.value=""
+    }
+    recorder.start()
+    await mkMovie(recorder)
 }
 </script>
